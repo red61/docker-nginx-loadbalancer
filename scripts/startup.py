@@ -11,6 +11,7 @@ It looks for environment variables in the following formats:
 Optional/Conditional environment variables:
 <service-name>_BALANCING_TYPE=[ip_hash|least_conn] (optional)
 <service-name>_EXPOSE_PROTOCOL=[http|https|both] (optional - default: http)
+<service-name>_UPSTREAM_PROTOCOL=[http|https] (optional - default: http)
 <service-name>_HOSTNAME=<vhostname> (required if <service-name>_EXPOSE_PROTOCOL is https or both)
 <env-formatted-vhostname>_SSL_CERTIFICATE=<something.pem> (required if the vhost will need ssl support)
 <env-formatted-vhostname>_SSL_CERTIFICATE_KEY=<something.key> (required if the vhost will need ssl support)
@@ -208,6 +209,7 @@ def parse_env(env=os.environ):
         access_log = value['access_log'] = env.get('%s_ACCESS_LOG' % (service_name), '/dev/stdout')
         log_level = value['log_level'] = env.get('%s_LOG_LEVEL' % (service_name), 'error')
         error_log = value['error_log'] = env.get('%s_ERROR_LOG' % (service_name), '/dev/stdout')
+        upstream_protocol = value['upstream_protocol'] = env.get('%s_UPSTREAM_PROTOCOL' % (service_name), 'http')
         assert access_log in ['/dev/stdout', 'off'], 'Invalid value for %s_ERROR_LOG: %s, must be "/dev/stdout" or "off"' % (service_name, access_log)
         assert log_level in [None, 'emerg', 'alert', 'crit', 'error', 'warn', 'notice', 'info', 'debug'], 'Invalid value for %s_LOG_LEVEL: %s, must be "emerg", "alert", "crit", "error", "warn", "notice", "info", "debug" or nonexistant.' % (service_name, log_level)
         assert error_log in ['/dev/stdout', '/dev/null'], 'Invalid value for %s_ERROR_LOG: %s, must be "/dev/stdout" or "/dev/null"' % (service_name, error_log)
